@@ -1,0 +1,13 @@
+flutter_native_splash:
+  android: true
+  ios: false
+  web: false
+
+  background_image: "assets/useRegistration.png"
+  image: "assets/useIcon.png"
+  branding: "assets/dd.png"
+
+  android_12:
+    color: "#6eb4d6"
+    image: "assets/nin.png"
+    branding: "assets/njam.png"
