@@ -1,26 +1,37 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:projects/auth.dart';
-import 'package:projects/widgets/HomeAppBar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:projects/pages/CartPage.dart';
+import 'package:projects/pages/UploadItemPage.dart';
+import 'package:projects/pages/ContactUsPAge.dart'; // Import ContactUsPage
+import 'package:projects/pages/SideMenuPage.dart'; // Import SideMenuPage
+import 'package:projects/pages/profile_page.dart'; // Import ProfileScreen
+import 'package:flutter/cupertino.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
-  final User? user = Auth().currentUser;
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
 
-  Future<void> signOut() async {
-    try {
-      await Auth().signOut();
-    } catch (e) {
-      print("Error signing out: $e");
-    }
-  }
-
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Home"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              // Open the side menu
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SideMenuPage()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -32,7 +43,6 @@ class HomePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              HomeAppBar(),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -40,7 +50,7 @@ class HomePage extends StatelessWidget {
                   children: [
                     // Welcome Message
                     Text(
-                      "Welcome, ${user?.email ?? 'User'}!",
+                      "Welcome, User!", // Replace with dynamic user email if needed
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -123,18 +133,57 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
+                    // Category Options
+                    Wrap(
+                      spacing: 10, // Horizontal spacing between category chips
+                      runSpacing: 10, // Vertical spacing between category chips
                       children: [
-                        _buildCategoryCard(Icons.book, "Book"),
-                        _buildCategoryCard(Icons.phone_android, "Electronics"),
-                        _buildCategoryCard(Icons.class_, "Metarials"),
-                        _buildCategoryCard(Icons.sports_football, "Sports"),
+                        _buildCategoryChip("Book"),
+                        _buildCategoryChip("Electronics"),
+                        _buildCategoryChip("Material"),
+                        _buildCategoryChip("Sports"),
                       ],
+                    ),
+                    const SizedBox(height: 20),
+                    // StreamBuilder to fetch and display items
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('items')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Center(child: Text('No items found.'));
+                        }
+
+                        final items = snapshot.data!.docs;
+
+                        return GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          children: items.map((DocumentSnapshot document) {
+                            final item =
+                            document.data() as Map<String, dynamic>;
+                            return _buildCategoryCard(
+                              Icons
+                                  .shopping_bag, // You can change the icon based on category
+                              item['name'],
+                              item['price'],
+                              item['imageUrl'],
+                            );
+                          }).toList(),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -150,8 +199,13 @@ class HomePage extends StatelessWidget {
           if (index == 0) {
             // Navigate to home
           } else if (index == 1) {
+            // Navigate to upload item page
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UploadItemPage()),
+            );
+          } else if (index == 2) {
             // Navigate to cart
-          } else if (index == 2){
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => CartPage()),
@@ -226,7 +280,8 @@ class HomePage extends StatelessWidget {
   }
 
   // Helper method to build category cards
-  Widget _buildCategoryCard(IconData icon, String title) {
+  Widget _buildCategoryCard(
+      IconData icon, String title, String price, String imageUrl) {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(
@@ -237,7 +292,12 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: Colors.blue),
+            Image.network(
+              imageUrl,
+              height: 80,
+              width: 80,
+              fit: BoxFit.cover,
+            ),
             const SizedBox(height: 10),
             Text(
               title,
@@ -246,8 +306,27 @@ class HomePage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 5),
+            Text(
+              price,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.green,
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Helper method to build category chips
+  Widget _buildCategoryChip(String category) {
+    return Chip(
+      label: Text(category),
+      backgroundColor: Colors.grey[300],
+      labelStyle: TextStyle(
+        color: Colors.black,
       ),
     );
   }
