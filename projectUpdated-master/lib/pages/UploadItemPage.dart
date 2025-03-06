@@ -132,109 +132,199 @@ class _UploadItemPageState extends State<UploadItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Item'),
+        title: Text(
+          "Upload Item",
+          style: TextStyle(color: Colors.white), // Change text color here
+        ),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blue.shade900,
+        elevation: 10,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Item Name
-              TextFormField(
-                controller: _itemNameController,
-                focusNode: _nameFocus,
-                decoration: InputDecoration(
-                  labelText: 'Item Name',
-                  border: OutlineInputBorder(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue.shade900, Colors.blue.shade300],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Item Name
+                TextFormField(
+                  controller: _itemNameController,
+                  focusNode: _nameFocus,
+                  decoration: InputDecoration(
+                    labelText: 'Item Name',
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.shopping_bag, color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Please enter the item name' : null,
                 ),
-                validator: (value) => value == null || value.isEmpty ? 'Please enter the item name' : null,
-              ),
-              SizedBox(height: 20),
+                SizedBox(height: 30),
 
-              // Item Description
-              TextFormField(
-                controller: _itemDescriptionController,
-                focusNode: _descriptionFocus,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(),
+                // Item Description
+                TextFormField(
+                  controller: _itemDescriptionController,
+                  focusNode: _descriptionFocus,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.description, color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                  maxLines: 3,
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Please enter a description' : null,
                 ),
-                maxLines: 3,
-                validator: (value) => value == null || value.isEmpty ? 'Please enter a description' : null,
-              ),
-              SizedBox(height: 20),
+                SizedBox(height: 20),
 
-              // Item Price
-              TextFormField(
-                controller: _itemPriceController,
-                focusNode: _priceFocus,
-                decoration: InputDecoration(
-                  labelText: 'Price',
-                  border: OutlineInputBorder(),
+                // Item Price
+                TextFormField(
+                  controller: _itemPriceController,
+                  focusNode: _priceFocus,
+                  decoration: InputDecoration(
+                    labelText: 'Price',
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.attach_money, color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Please enter the price';
+                    if (double.tryParse(value) == null) return 'Please enter a valid number';
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter the price';
-                  if (double.tryParse(value) == null) return 'Please enter a valid number';
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
+                SizedBox(height: 20),
 
-              // Category Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                hint: Text('Select Category'),
-                items: _categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                // Category Dropdown
+                DropdownButtonFormField<String>(
+                  value: _selectedCategory,
+                  hint: Text('Select Category', style: TextStyle(color: Colors.white)),
+                  items: _categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category, style: TextStyle(color: Colors.black)),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.category, color: Colors.white),
+                  ),
+                  dropdownColor: Colors.blue.shade300,
+                  validator: (value) => value == null ? 'Please select a category' : null,
                 ),
-                validator: (value) => value == null ? 'Please select a category' : null,
-              ),
-              SizedBox(height: 20),
+                SizedBox(height: 20),
 
-              // Image Preview
-              ValueListenableBuilder<File?>(
-                valueListenable: _imageNotifier,
-                builder: (context, image, child) {
-                  return image == null
-                      ? Text('No image selected.')
-                      : Image.file(image, height: 200);
-                },
-              ),
-              SizedBox(height: 20),
+                // Image Preview
+                ValueListenableBuilder<File?>(
+                  valueListenable: _imageNotifier,
+                  builder: (context, image, child) {
+                    return image == null
+                        ? Text('No image selected.', style: TextStyle(color: Colors.white))
+                        : ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(image, height: 200),
+                    );
+                  },
+                ),
+                SizedBox(height: 30),
 
-              // Pick Image Button
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Pick Image'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              ),
-              SizedBox(height: 20),
+                // Pick Image Button
+                ElevatedButton.icon(
+                  onPressed: _pickImage,
+                  icon: Icon(Icons.image, color: Colors.white),
+                  label: Text('Pick Image', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade700,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 150),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 5,
+                  ),
+                ),
+                SizedBox(height: 30),
 
-              // Upload Button
-              _isUploading
-                  ? Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                onPressed: _uploadItem,
-                child: Text('Upload Item'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              ),
-            ],
+                // Upload Button
+                _isUploading
+                    ? Center(child: CircularProgressIndicator(color: Colors.white))
+                    : ElevatedButton.icon(
+                  onPressed: _uploadItem,
+                  icon: Icon(Icons.upload, color: Colors.white),
+                  label: Text('Upload Item', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade700,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 150),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 5,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

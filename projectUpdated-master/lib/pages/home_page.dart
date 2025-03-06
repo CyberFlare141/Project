@@ -18,15 +18,30 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: Text(
+          "Home",
+          style: TextStyle(color: Colors.white), // Change text color here
+        ),
+        backgroundColor: Colors.blue.shade900,
+        elevation: 10,
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.white),
+          onPressed: () {
+            // Open the side menu
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SideMenuPage()),
+            );
+          },
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.account_circle, color: Colors.white),
             onPressed: () {
-              // Open the side menu
+              // Navigate to Profile Screen
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SideMenuPage()),
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
               );
             },
           ),
@@ -52,18 +67,25 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       "Welcome, User!", // Replace with dynamic user email if needed
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     // Search Bar
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
                       ),
                       child: Row(
                         children: [
@@ -93,12 +115,12 @@ class _HomePageState extends State<HomePage> {
                     const Text(
                       "Featured: ",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 50),
                     SizedBox(
                       height: 200,
                       child: ListView(
@@ -124,27 +146,31 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 20),
                     // Categories Section
+                    // Categories Section
                     const Text(
                       "Categories: ",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Category Options
-                    Wrap(
-                      spacing: 10, // Horizontal spacing between category chips
-                      runSpacing: 10, // Vertical spacing between category chips
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 1.2,
                       children: [
-                        _buildCategoryChip("Book"),
-                        _buildCategoryChip("Electronics"),
-                        _buildCategoryChip("Material"),
-                        _buildCategoryChip("Sports"),
+                        _buildCategoryBox("Books", Icons.book, Colors.blue),
+                        _buildCategoryBox("Electronics", Icons.electrical_services, Colors.green),
+                        _buildCategoryBox("Sports", Icons.sports_soccer, Colors.orange),
+                        _buildCategoryBox("Material", Icons.construction, Colors.purple),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 300),
                     // StreamBuilder to fetch and display items
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
@@ -319,7 +345,44 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
+// Helper method to build category boxes
+  Widget _buildCategoryBox(String title, IconData icon, Color color) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [color.withOpacity(0.8), color.withOpacity(0.4)],
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 50,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   // Helper method to build category chips
   Widget _buildCategoryChip(String category) {
     return Chip(
